@@ -5,6 +5,7 @@ from discord import app_commands
 from discord.ext import commands
 from utils.db import db
 from SetUp.setup import setup_guild
+from utils.email import email_sender
 from utils.verification import refresh_verification_message
 
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -19,15 +20,19 @@ class MyClient(commands.Bot):
 
     async def setup_hook(self):
         await db.connect()
+        await email_sender.start()
 
         # Load extensions first so their commands are registered
         await self.load_extension("Teams.create_team")
         await self.load_extension("Teams.archive_team")
         await self.load_extension("Teams.list_teams")
         await self.load_extension("Admin.admin")
+        await self.load_extension("Admin.set_captain")
         await self.load_extension("Dues.set-dues")
         await self.load_extension("Dues.generate")
         await self.load_extension("Webscrape.webscrape")
+        await self.load_extension("Rooms.rooms")
+        await self.load_extension("Rooms.reservations")
 
         await self.load_extension("SetUp.backfill")
         await self.load_extension("year")
